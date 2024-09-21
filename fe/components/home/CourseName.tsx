@@ -12,6 +12,7 @@ import {
   FormLabel
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import DataTable from "./DataTable";
 
 export default function CourseName() {
   const formSchema = z.object({
@@ -64,6 +65,7 @@ export default function CourseName() {
         />
         <Button type="submit">Submit</Button>
       </form>
+      
     </Form>
   )
 }

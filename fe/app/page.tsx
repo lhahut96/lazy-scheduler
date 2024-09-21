@@ -2,6 +2,8 @@
 import CourseName from "@/components/home/CourseName";
 import DragUpload from "@/components/home/DragUpload";
 import Header from "@/components/home/Header";
+import DataTable from "@/components/home/DataTable";
+import SettingsContainer from "@/components/home/SettingsContainer"
 
 export default function Home() {
   return (
@@ -11,6 +13,8 @@ export default function Home() {
         <div className="">
           <DragUpload />  
           <CourseName />
+          <DataTable />
+          <SettingsContainer />
         </div>
       </div>
     </>
