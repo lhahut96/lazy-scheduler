@@ -7,24 +7,24 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormLabel
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 export default function CourseName() {
   const formSchema = z.object({
-    username: z.string().min(2).max(50),
+    courseName: z.string().min(2).max(50),
+    roomNumber: z.string().min(2).max(50),
   });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      courseName: "",
+      roomNumber: "",
     },
   });
 
@@ -37,20 +37,28 @@ export default function CourseName() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-[300px]">
         <FormField
           control={form.control}
-          name="username"
+          name="courseName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Course Name: </FormLabel>
               <FormControl>
                 <Input placeholder="shadcn" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="roomNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Room Number:</FormLabel>
+              <FormControl>
+                <Input placeholder="shadcn" {...field} />
+              </FormControl>
             </FormItem>
           )}
         />
