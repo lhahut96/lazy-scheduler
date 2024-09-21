@@ -1,5 +1,5 @@
 {
-  "dependencies": {},
+  "dependencies": { "axios": "^1.7.7" },
   "devDependencies": {
     "@types/wicg-file-system-access": "^2023.10.5"
   }

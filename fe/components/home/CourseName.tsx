@@ -9,11 +9,18 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-export default function CourseName() {
+export default function CourseName({
+  handleFieldUpdate,
+}: {
+  handleFieldUpdate: (values: {
+    courseName: string;
+    roomNumber: string;
+  }) => void,
+}) {
   const formSchema = z.object({
     courseName: z.string().min(2).max(50),
     roomNumber: z.string().min(2).max(50),
@@ -32,38 +39,43 @@ export default function CourseName() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    handleFieldUpdate(values);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-[300px]">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='space-y-8 max-w-[300px] flex flex-col items-center'
+      >
         <FormField
           control={form.control}
-          name="courseName"
+          name='courseName'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Course Name: </FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder='Course Name: CSIS-3375' {...field} />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="roomNumber"
+          name='roomNumber'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Room Number:</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder='Room Number: NW6170' {...field} />
               </FormControl>
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button className='mx-auto' type='submit'>
+          Generate Schedule
+        </Button>
       </form>
     </Form>
-  )
+  );
 }
