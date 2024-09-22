@@ -12,7 +12,6 @@ import {
   FormLabel
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import DataTable from "./DataTable";
 
 export default function CourseName() {
   const formSchema = z.object({
@@ -47,7 +46,7 @@ export default function CourseName() {
               <FormItem>
                 <FormLabel>Course Name: </FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="Enter course name" {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -59,12 +58,13 @@ export default function CourseName() {
               <FormItem>
                 <FormLabel>Room Number:</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="e.g. N5107" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">Submit</Button> {/* Optional: Make button full-width */}
+          <Button type="submit" 
+          className="w-full max-w-[200px] mx-auto block">Generate Schdual</Button> {/* Optional: Make button full-width */}
         </form>
       </Form>
     </div>
