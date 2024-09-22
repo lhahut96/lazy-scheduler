@@ -126,7 +126,7 @@ def get_schedule_table(file_stream, file_name, schedule_type):
                     if column_index == 3:
                         field = "activities"
                     if column_index == 4 and len(headers) == 4:
-                        field = "due_dates"
+                        field = "assessment"
                     if column_index == 5 and len(headers) == 5:
                         field = "assessment"
                     if field == "activities" or field == "assessment":
