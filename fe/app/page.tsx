@@ -1,15 +1,31 @@
 "use client";
 import CourseName from "@/components/home/CourseName";
+import DataTable, { DataRow } from "@/components/home/DataTable";
 import DragUpload from "@/components/home/DragUpload";
 import Header from "@/components/home/Header";
 import { generateSchedule, generateScheduleData } from "@/lib/axios/fetchApi";
 import { useState } from "react";
 
+type ScheduleData = {
+  course: string;
+  description: string;
+  endtime: string;
+  events: DataRow[];
+}
+
 export default function Home() {
   const [data, setData] = useState<generateScheduleData>({
     courseName: "",
     roomNumber: "",
+    time : "12:00",
     outlineFile: null,
+  });
+
+  const [scheduleData, setScheduleData] = useState<ScheduleData>({
+    course: "",
+    description: "",
+    endtime: "",
+    events: [],
   });
 
   // const handleScheduleUploadFile = (file: File) => {
@@ -19,14 +35,14 @@ export default function Home() {
     setData({ ...data, outlineFile: file });
   };
 
-  const fieldUpdate = (values: { courseName: string; roomNumber: string }) => {
+  const fieldUpdate = (values: { courseName: string; roomNumber: string, time: string}) => {
     const newData = {
       courseName: values.courseName,
       roomNumber: values.roomNumber,
+      time: values.time,
       outlineFile: data.outlineFile,
     };
     setData(newData);
-    console.log(newData.outlineFile?.stream());
     handleGenerateSchedule(newData);
   };
 
@@ -52,6 +68,7 @@ export default function Home() {
           <CourseName
             handleFieldUpdate={fieldUpdate}
           />
+          <DataTable />
         </div>
       </div>
     </>
