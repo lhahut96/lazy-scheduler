@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
-import { DragEvent, useRef, useState } from "react";
+import { DragEvent, useEffect, useRef, useState } from "react";
 
 export default function DragUpload({
   handleUpload,
@@ -39,12 +39,18 @@ export default function DragUpload({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (e.target.files) {
-        handleUpload(e.target.files[0]);
+        setFile(e.target.files[0]);
       }
     } catch (error) {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (file) {
+      handleUpload(file);
+    }
+  }, [file]);
 
   return (
     <div className='p-6 bg-white rounded-lg shadow-md'>
