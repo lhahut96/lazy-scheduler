@@ -12,6 +12,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import TimePicker from "../TimePicker";
 
 export default function CourseName({
   handleFieldUpdate,
@@ -19,8 +21,11 @@ export default function CourseName({
   handleFieldUpdate: (values: {
     courseName: string;
     roomNumber: string;
+    time: string;
   }) => void,
 }) {
+  const [time, setTime] = useState("12:00");
+
   const formSchema = z.object({
     courseName: z.string().min(2).max(50),
     roomNumber: z.string().min(2).max(50),
@@ -39,7 +44,7 @@ export default function CourseName({
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    handleFieldUpdate(values);
+    handleFieldUpdate({...values, time});
   }
 
   return (
@@ -72,6 +77,8 @@ export default function CourseName({
             </FormItem>
           )}
         />
+          <TimePicker setTimeData={setTime} />
+
         <Button className='mx-auto' type='submit'>
           Generate Schedule
         </Button>
