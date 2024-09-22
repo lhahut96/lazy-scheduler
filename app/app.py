@@ -19,7 +19,6 @@ app = Flask(__name__)
 CORS(app)
 
 # If modifying these scopes, delete the file token.json.
-# SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 
 # @app.route("/check-permission")
@@ -66,9 +65,6 @@ def createEvents():
         if validated:
             creds = checkGooglePermission()
             service = build("calendar", "v3", credentials=creds)
-
-            # course = json.loads(data)
-            # print(jsonData)
 
             # create weekly class event
             weeklyClass = {
@@ -121,7 +117,6 @@ def createEvents():
                         'overrides': reminders
                     }
 
-                # print(eventData)
                 eventData = service.events().insert(calendarId='primary', body=eventData).execute()
                 result = 'Event created: %s' % (eventData.get('htmlLink'))
                 print(result + "\n")
@@ -160,26 +155,15 @@ def upload():
     time = request.form['time']
     file = request.files['outlineFile']
 
-    # courseName = "course name"
-    # roomNumber = "123"
-
-    # time = '14:00'
     tmp = time.split(':')
     hour = int(tmp[0])
     minute = int(tmp[1])
-
-    # print(file)
-    # print(courseName)
-    # print(roomNumber)
 
     # call image parser
     rawResp = get_schedule_table(file_name=file.filename,
                                file_stream=file.read(),
                                schedule_type="course-outline")
-
     
-    print(rawResp)
-        
     events = []
     noOfWeeks = rawResp['no_of_weeks']
     rawEvents = rawResp['events']
@@ -198,8 +182,6 @@ def upload():
         }
 
         events.append(tmp)
-
-    # print(events)
 
     # get date for first week
     rawFirstWeekDate = datetime.strptime(rawResp['start_date'],"%Y-%m-%dT%H:%M:%S")
