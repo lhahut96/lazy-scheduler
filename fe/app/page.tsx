@@ -135,7 +135,10 @@ export default function Home() {
       {finishCreatedReminder ? (
         <div className='w-full space-y-6 flex flex-col items-center justify-center'>
           <h1 className='text-2xl font-semibold text-gray-700 mt-4'>
-            Pet the dog to go to calendar
+            Events are created on Google Calendar
+          </h1>
+          <h1 className='text-2xl font-semibold text-gray-700 mt-4'>
+            Pet the dog to navigate to calendar
           </h1>
           <Link href={calendarUrl} target="_blank" >
             <Image src='/dog.gif' width={500} height={500} alt='Dog Gif' />
