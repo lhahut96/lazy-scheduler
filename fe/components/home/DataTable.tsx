@@ -12,30 +12,27 @@ import { useState } from "react";
 import DialogForm from "./DialogForm";
 
 export type DataRow = {
-  id: number;
   name: string;
   description: string;
   startTime: string;
   endTime: string;
-  reminders: number;
+  reminders: number[];
 };
 
-const initialData = [
+const initialData : DataRow[] = [
   {
-    id: 1,
     name: "quiz 1",
     description: "this is description/remarks/notes",
     startTime: "2024-09-21T14:00:00-07:00",
     endTime: "2024-09-21T17:00:00-07:00",
-    reminders: 500,
+    reminders: [],
   },
   {
-    id: 2,
     name: "quiz 2",
     description: "this is description/remarks/notes",
     startTime: "2024-09-22T14:00:00-07:00",
     endTime: "2024-09-22T17:00:00-07:00",
-    reminders: 1440,
+    reminders: [],
   },
 ];
 
@@ -77,12 +74,11 @@ export default function DataTable() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState(initialData);
   const [selectedRow, setSelectedRow] = useState<DataRow>({
-    id: 0,
     name: "",
     description: "",
     startTime: "",
     endTime: "",
-    reminders: 0,
+    reminders: [],
   }); // Store selected row for editing
 
   const closeDialog = () => {
@@ -96,11 +92,13 @@ export default function DataTable() {
 
   const handleUpdateRow = (updatedRow: DataRow) => {
     // Update the row in the data array
-    setData((prevData) =>
-      prevData.map((d) =>
-        d.name === updatedRow.name ? { ...d, ...updatedRow } : d
-      )
-    );
+    const updatedData = data.map((d) => {
+      if (d.name === updatedRow.name) {
+        return {...updatedRow, reminders: updatedRow.reminders ?? []};
+      }
+      return d;
+    });
+    setData(updatedData);
   };
 
   return (
@@ -114,18 +112,18 @@ export default function DataTable() {
             <TableHead>Time</TableHead>
             <TableHead>Reminder</TableHead>
             <TableHead>Notes</TableHead>
-            <TableHead>Settings</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((d) => (
-            <TableRow key={d.id}>
+          {data.map((d,index) => (
+            <TableRow key={index}>
               <TableCell className='font-medium'>{d.name}</TableCell>
               <TableCell>{formatDate(d.startTime)}</TableCell>
               <TableCell>{formatTime(d.endTime)}</TableCell>
-              <TableCell>{formatReminder(d.reminders)}</TableCell>
+              <TableCell>{formatReminder(d.reminders[0])}</TableCell>
               <TableCell>{d.description}</TableCell>
-              <TableCell>
+              <TableCell className="flex items-center justify-center">
                 <Settings
                   onClick={() => handleSettingsClick(d)}
                   className='cursor-pointer'

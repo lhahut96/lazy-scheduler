@@ -32,7 +32,7 @@ export default function DialogForm({
   selectedRow,
   onUpdate, // Receive update function
 }: DialogFormProps) {
-  const [reminderMinutes, setReminderMinutes] = useState(selectedRow.reminders);
+  const [reminderMinutes, setReminderMinutes] = useState(selectedRow.reminders[0] ?? 0);
   const [reminderType, setReminderType] = useState("minute");
   const [notes, setNotes] = useState(selectedRow.description);
 
@@ -42,10 +42,10 @@ export default function DialogForm({
     // Convert reminder to minutes based on the type
     switch (reminderType) {
       case "hour":
-        newReminderMinutes = reminderMinutes * 60; // Convert to minutes
+        newReminderMinutes = newReminderMinutes * 60; // Convert to minutes
         break;
       case "day":
-        newReminderMinutes = reminderMinutes * 60 * 24; // Convert to minutes
+        newReminderMinutes = newReminderMinutes * 60 * 24; // Convert to minutes
         break;
       default:
         break;
@@ -53,12 +53,11 @@ export default function DialogForm({
 
     // Call the update function with new data
     onUpdate({
-      id: selectedRow.id,
       name: selectedRow.name,
       startTime: selectedRow.startTime,
       endTime: selectedRow.endTime,
       description: notes,
-      reminders: newReminderMinutes, // Ensure it's an integer
+      reminders: [newReminderMinutes], // Ensure it's an integer
     });
     onClose(); // Close dialog after saving
   };
