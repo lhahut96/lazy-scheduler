@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Settings } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DialogForm from "./DialogForm";
 
 export type DataRow = {
@@ -70,9 +70,9 @@ const formatReminder = (minutes: number): string => {
   }
 };
 
-export default function DataTable() {
+export default function DataTable({tableData = initialData, handleUpdateTable}: {tableData?: DataRow[], handleUpdateTable: (updatedData: DataRow[]) => void}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState(tableData);
   const [selectedRow, setSelectedRow] = useState<DataRow>({
     name: "",
     description: "",
@@ -98,8 +98,12 @@ export default function DataTable() {
       }
       return d;
     });
-    setData(updatedData);
+    handleUpdateTable(updatedData);
   };
+
+  useEffect(() => {
+    setData(tableData);
+  }, [tableData]);
 
   return (
     <>
@@ -107,7 +111,7 @@ export default function DataTable() {
         <TableCaption></TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className='w-[100px]'>Event</TableHead>
+            <TableHead className='max-w-1/2 w-fit'>Event</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Time</TableHead>
             <TableHead>Reminder</TableHead>
@@ -120,8 +124,8 @@ export default function DataTable() {
             <TableRow key={index}>
               <TableCell className='font-medium'>{d.name}</TableCell>
               <TableCell>{formatDate(d.startTime)}</TableCell>
-              <TableCell>{formatTime(d.endTime)}</TableCell>
-              <TableCell>{formatReminder(d.reminders[0])}</TableCell>
+              <TableCell>{formatTime(d.startTime)}</TableCell>
+              <TableCell>{formatReminder(d.reminders[0] ?? 0)}</TableCell>
               <TableCell>{d.description}</TableCell>
               <TableCell className="flex items-center justify-center">
                 <Settings
