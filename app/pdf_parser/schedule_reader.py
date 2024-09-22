@@ -4,7 +4,7 @@ from dateparser import parse
 
 import boto3
 
-from app.pdf_parser.utils.cache_utils import cache
+from pdf_parser.utils.cache_utils import cache
 
 AWS_DEFAULT_REGION = "us-west-2"
 

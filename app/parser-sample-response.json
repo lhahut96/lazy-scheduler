@@ -1,0 +1,65 @@
+{
+    "events": [
+        {
+            "week": "2",
+            "date": "2024-09-16T00:00:00",
+            "type": "assignment",
+            "name": "Assignment 1 Due"
+        },
+        {
+            "week": "3",
+            "date": "2024-09-23T00:00:00",
+            "type": "assignment",
+            "name": "Assignment 2 Due"
+        },
+        {
+            "week": "4",
+            "date": "2024-09-30T00:00:00",
+            "type": "assignment",
+            "name": "Assignment 3 Due"
+        },
+        {
+            "week": "5",
+            "date": "2024-10-07T00:00:00",
+            "type": "exam",
+            "name": "Term Examination #1 (Chapter \"1,\" 2 & 3 & 7 partially)"
+        },
+        {
+            "week": "8",
+            "date": "2024-10-28T00:00:00",
+            "type": "assignment",
+            "name": "Assignment 4 Due Assignment 5 Due"
+        },
+        {
+            "week": "9",
+            "date": "2024-11-04T00:00:00",
+            "type": "exam",
+            "name": "Term Examination #2 (Chapters \"4,\" \"5,\" 6 & 7 partially)"
+        },
+        {
+            "week": "11",
+            "date": "2024-11-18T00:00:00",
+            "type": "exam",
+            "name": "Chapter 8 - Confidence Intervals Chapter 9 - Hypothesis Testing for Single Population Excel Lab Exam"
+        },
+        {
+            "week": "12",
+            "date": "2024-11-25T00:00:00",
+            "type": "assignment",
+            "name": "Assignment 8 Due"
+        },
+        {
+            "week": "13",
+            "date": "2024-12-02T00:00:00",
+            "type": "assignment",
+            "name": "Assignment 9 Due Assignment 10 Due"
+        },
+        {
+            "week": "14",
+            "date": "2024-12-09T00:00:00",
+            "type": "exam",
+            "name": "FINAL EXAM - Comprehensive (Chapters: \"1,\" \"2,\" \"3,\" \"8,\" \"9,\" 10 & 14) *This is a tentative date for the final exam. The actual date will be announced by the registrar."
+        }
+    ],
+    "no_of_weeks": 14
+}
