@@ -143,11 +143,15 @@ def get_schedule_table(file_stream, file_name, schedule_type):
                             elif "quiz" in cell.lower() and "review" not in cell.lower():
                                 event["type"] = "quiz"
                                 event["name"] = cell.strip()
+                            elif "project" in cell.lower() and "review" not in cell.lower() and field == "assessment":
+                                event["type"] = "project"
+                                event["name"] = cell.strip()
                         continue
                     if field == "date":
                         if not cell.strip():
                             continue
-                        cell = cell.split("-")[0].strip()
+
+                        cell = cell.split(" - ")[0].strip()
                         date = parse(cell).isoformat()
                         event[field] = date
                         if not start_date:
@@ -176,4 +180,4 @@ def main(file_path):
 
 if __name__ == "__main__":
     # file_name = sys.argv[1]
-    main("data/course-outline-02.png")
+    main("data/WhatsApp Image 2024-09-22 at 10.30.16 AM.jpeg")
