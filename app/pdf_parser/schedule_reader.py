@@ -96,6 +96,7 @@ def get_schedule_table(file_stream, file_name, schedule_type):
     for table in table_blocks:
         rows, scores = get_rows_columns_map(table, blocks_map, schedule_type)
         headers = rows[1]
+        start_date = None
         for row_index, row in rows.items():
             if row_index == 1:
                 continue
@@ -147,11 +148,15 @@ def get_schedule_table(file_stream, file_name, schedule_type):
                         if not cell.strip():
                             continue
                         cell = cell.split("-")[0].strip()
-                        event[field] = parse(cell).isoformat()
+                        date = parse(cell).isoformat()
+                        event[field] = date
+                        if not start_date:
+                            start_date = date
                     else:
                         event[field] = cell.strip()
             if event.get("type"):
                 result["events"].append(event)
+        result["start_date"] = start_date
         break
     return result
 
@@ -171,4 +176,4 @@ def main(file_path):
 
 if __name__ == "__main__":
     # file_name = sys.argv[1]
-    main("data/course-outline-01.png")
+    main("data/course-outline-02.png")
