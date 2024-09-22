@@ -1,3 +1,4 @@
+import { ScheduleData } from "@/app/page";
 import axiosInstance from "./instance";
 
 export type generateScheduleData = {
@@ -10,15 +11,23 @@ export type generateScheduleData = {
 const generateSchedule = async (data: generateScheduleData) => {
   try {
     const response = await axiosInstance.postForm("/upload", data);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error:", error);
   }
 };
 
+const createReminders = async (data: ScheduleData) => {
+  try {
+    const response = await axiosInstance.post("/create-schedule", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 
 export {
-  generateSchedule
+  createReminders, generateSchedule
 };
 

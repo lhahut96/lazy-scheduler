@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload } from "lucide-react";
+import { Archive, File, FileQuestion, FileText, Film, Image, Music, Upload } from "lucide-react";
 import { DragEvent, useEffect, useRef, useState } from "react";
 
 export default function DragUpload({
@@ -36,6 +36,16 @@ export default function DragUpload({
     }
   };
 
+  const getFileIcon = (fileType: string) => {
+    if (fileType.startsWith('image/')) return <Image className="h-12 w-12" />
+    if (fileType.startsWith('video/')) return <Film className="h-12 w-12" />
+    if (fileType.startsWith('audio/')) return <Music className="h-12 w-12" />
+    if (fileType === 'application/pdf') return <FileText className="h-12 w-12" />
+    if (fileType === 'application/zip' || fileType === 'application/x-rar-compressed') return <Archive className="h-12 w-12" />
+    if (fileType.startsWith('text/')) return <File className="h-12 w-12" />
+    return <FileQuestion className="h-12 w-12" />
+  }
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (e.target.files) {
@@ -62,13 +72,20 @@ export default function DragUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Upload className='mx-auto h-32 w-12 text-gray-400' />
-        <Label
-          htmlFor='file-upload'
-          className='mt-4 block text-sm font-medium text-gray-700'
-        >
-          Drag and drop your files here, or click to select files
-        </Label>
+        {file ? (
+          <div className="flex flex-col items-center">
+            {getFileIcon(file.type)}
+            <span className="mt-2 text-sm font-medium text-gray-700 max-w-[200px] truncate">{file.name}</span>
+            <span className="mt-2 text-sm font-medium text-gray-700">{file.type}</span>
+          </div>
+        ) : (
+          <>
+            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <Label htmlFor="file-upload" className="mt-4 block text-sm font-medium text-gray-700">
+              Drag and drop your file here, or click to select a file
+            </Label>
+          </>
+        )}
         <Input
           id='file-upload'
           type='file'
