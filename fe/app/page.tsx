@@ -12,9 +12,11 @@ export default function Home() {
       <div className='w-full flex items-center justify-center p-20'>
         <div className="">
           <DragUpload />  
+          <br />
           <CourseName />
+          <br/>
           <DataTable />
-          <SettingsContainer />
+          
         </div>
       </div>
     </>

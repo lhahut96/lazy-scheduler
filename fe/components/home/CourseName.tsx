@@ -37,35 +37,36 @@ export default function CourseName() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-[300px]">
-        <FormField
-          control={form.control}
-          name="courseName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Course Name: </FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="roomNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Room Number:</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-      
-    </Form>
+    <div className="flex items-center justify-center "> {/* Centering container */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-[300px]">
+          <FormField
+            control={form.control}
+            name="courseName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Course Name: </FormLabel>
+                <FormControl>
+                  <Input placeholder="shadcn" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="roomNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Room Number:</FormLabel>
+                <FormControl>
+                  <Input placeholder="shadcn" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full">Submit</Button> {/* Optional: Make button full-width */}
+        </form>
+      </Form>
+    </div>
   )
 }
