@@ -4,7 +4,7 @@ from dateparser import parse
 
 import boto3
 
-from app.pdf_parser.utils.cache_utils import cache
+from pdf_parser.utils.cache_utils import cache
 
 AWS_DEFAULT_REGION = "us-west-2"
 
@@ -131,17 +131,20 @@ def get_schedule_table(file_stream, file_name, schedule_type):
                         field = "assessment"
                     if field == "activities" or field == "assessment":
                         if "type" not in event:
-                            if "exam" in cell.lower() and "review" not in cell.lower():
+                            if ("exam" in cell.lower() or "test" in cell.lower()) and "review" not in cell.lower():
                                 event["type"] = "exam"
                                 event["name"] = cell.strip()
-                            elif "assignment" in cell.lower():
+                            elif "assignment" in cell.lower() and "review" not in cell.lower():
                                 event["type"] = "assignment"
                                 event["name"] = cell.strip()
-                            elif "quiz" in cell.lower():
+                            elif "quiz" in cell.lower() and "review" not in cell.lower():
                                 event["type"] = "quiz"
                                 event["name"] = cell.strip()
                         continue
                     if field == "date":
+                        if not cell.strip():
+                            continue
+                        cell = cell.split("-")[0].strip()
                         event[field] = parse(cell).isoformat()
                     else:
                         event[field] = cell.strip()
@@ -152,12 +155,12 @@ def get_schedule_table(file_stream, file_name, schedule_type):
 
 
 def main(file_name):
-    with open(file_name, 'rb') as file:
+    with open("data/" + file_name, 'rb') as file:
         img_test = file.read()
         bytes_test = bytearray(img_test)
         print('Image loaded', file_name)
 
-    table = get_schedule_table(file_name="course-outline.png",
+    table = get_schedule_table(file_name=file_name,
                                file_stream=bytes_test,
                                schedule_type="course-outline")
     with open('data/schedule.json', 'w') as outfile:
@@ -166,4 +169,4 @@ def main(file_name):
 
 if __name__ == "__main__":
     # file_name = sys.argv[1]
-    main("data/course-schedule.png")
+    main("course-outline-01.png")
