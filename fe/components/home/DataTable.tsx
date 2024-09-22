@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,7 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Settings } from "lucide-react";
+import { useState } from "react";
 import DialogForm from "./DialogForm";
+
+export type DataRow = {
+  id: number;
+  name: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  reminders: number;
+};
 
 const initialData = [
   {
@@ -33,53 +42,59 @@ const initialData = [
 // Helper function to format date
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 };
 
 // Helper function to format time
 const formatTime = (dateString: string): string => {
   const date = new Date(dateString);
   let hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, '0'); // Ensures two digits
-  const period = hours >= 12 ? 'PM' : 'AM';
+  const minutes = date.getMinutes().toString().padStart(2, "0"); // Ensures two digits
+  const period = hours >= 12 ? "PM" : "AM";
   hours = hours % 12 || 12; // Converts to 12-hour format
   return `${hours}:${minutes}${period}`;
 };
 
 // Helper function to format reminders from minutes to "X hours Y minutes"
 const formatReminder = (minutes: number): string => {
-  if (minutes >= 1440) { // 1440 minutes = 24 hours
+  if (minutes >= 1440) {
+    // 1440 minutes = 24 hours
     const days = Math.floor(minutes / 1440);
-    return `${days} day${days !== 1 ? 's' : ''}`;
-  } else if (minutes < 60) { // Less than 1 hour
-    return `${minutes} min${minutes !== 1 ? 's' : ''}`;
-  } else { // Between 1 hour and 24 hours
+    return `${days} day${days !== 1 ? "s" : ""}`;
+  } else if (minutes >= 60) {
+    // 60 minutes = 1 hour
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return `${hours} hr${hours !== 1 ? 's' : ''} ${remainingMinutes} min${remainingMinutes !== 1 ? 's' : ''}`;
-  }};
-
+    return `${hours} hr${hours !== 1 ? "s" : ""}${remainingMinutes > 0 ? ` ${remainingMinutes} min${remainingMinutes !== 1 ? "s" : ""}` : ""}`;
+  } else {
+    // Less than 1 hour
+    return `${minutes} min${minutes !== 1 ? "s" : ""}`;
+  }
+};
 
 export default function DataTable() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState(initialData);
-  const [selectedRow, setSelectedRow] = useState(null); // Store selected row for editing
-
-  const openDialog = () => {
-    setIsDialogOpen(true);
-  };
+  const [selectedRow, setSelectedRow] = useState<DataRow>({
+    id: 0,
+    name: "",
+    description: "",
+    startTime: "",
+    endTime: "",
+    reminders: 0,
+  }); // Store selected row for editing
 
   const closeDialog = () => {
     setIsDialogOpen(false);
   };
 
-  const handleSettingsClick = (row) => {
+  const handleSettingsClick = (row: DataRow) => {
     setSelectedRow(row);
     setIsDialogOpen(true);
   };
 
-  const handleUpdateRow = (updatedRow) => {
+  const handleUpdateRow = (updatedRow: DataRow) => {
     // Update the row in the data array
     setData((prevData) =>
       prevData.map((d) =>
@@ -94,7 +109,7 @@ export default function DataTable() {
         <TableCaption></TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Event</TableHead>
+            <TableHead className='w-[100px]'>Event</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Time</TableHead>
             <TableHead>Reminder</TableHead>
@@ -105,13 +120,16 @@ export default function DataTable() {
         <TableBody>
           {data.map((d) => (
             <TableRow key={d.id}>
-              <TableCell className="font-medium">{d.name}</TableCell>
+              <TableCell className='font-medium'>{d.name}</TableCell>
               <TableCell>{formatDate(d.startTime)}</TableCell>
               <TableCell>{formatTime(d.endTime)}</TableCell>
               <TableCell>{formatReminder(d.reminders)}</TableCell>
               <TableCell>{d.description}</TableCell>
               <TableCell>
-                <Settings onClick={() => handleSettingsClick(d)} className="cursor-pointer" />
+                <Settings
+                  onClick={() => handleSettingsClick(d)}
+                  className='cursor-pointer'
+                />
               </TableCell>
             </TableRow>
           ))}
