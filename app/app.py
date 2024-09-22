@@ -243,16 +243,16 @@ def upload():
     # print(roomNumber)
 
     # call image parser
-    # rawResp = get_schedule_table(file_name="course-outline.png",
-    #                            file_stream=file,
-    #                            schedule_type="course-outline")
+    rawResp = get_schedule_table(file_name="course-outline.png",
+                               file_stream=file,
+                               schedule_type="course-outline")
 
     
     # print(rawResp)
     # return "adsfsdf"
 
-    with open('parser-sample-response.json') as f:
-        rawResp = json.load(f)
+    # with open('parser-sample-response.json') as f:
+    #     rawResp = json.load(f)
         
     strStartTime = ""
     strEndTime = ""
