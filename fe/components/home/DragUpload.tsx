@@ -60,7 +60,7 @@ export default function DragUpload({
     if (file) {
       handleUpload(file);
     }
-  }, [file, handleUpload]);
+  }, [file]);
 
   return (
     <div className='p-6 bg-white rounded-lg shadow-md'>
