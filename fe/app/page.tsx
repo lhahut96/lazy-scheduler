@@ -11,6 +11,7 @@ import {
   generateScheduleData,
 } from "@/lib/axios/fetchApi";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export type ScheduleData = {
@@ -22,6 +23,7 @@ export type ScheduleData = {
 
 export default function Home() {
   const [finishCreatedReminder, setFinishCreatedReminder] = useState(false);
+  const [calendarUrl, setCalendarUrl] = useState("");
 
   const [data, setData] = useState<generateScheduleData>({
     courseName: "",
@@ -85,6 +87,7 @@ export default function Home() {
       setIsLoading(true);
       setTableData([]);
       const response = await createReminders(scheduleData);
+      setCalendarUrl(response.link);
       setFinishCreatedReminder(true);
     } catch (error) {
       console.error("Error:", error);
@@ -92,7 +95,7 @@ export default function Home() {
       setIsLoading(false);
       setTimeout(() => {
         scrollTo(0, document.body.scrollHeight);
-      }, 300)
+      }, 300);
     }
   };
 
@@ -118,7 +121,9 @@ export default function Home() {
                 tableData={tableData}
                 handleUpdateTable={handleUpdateEvents}
               />
-              <Button onClick={handleGenerateReminders}>Create Event Reminders</Button>
+              <Button onClick={handleGenerateReminders}>
+                Create Event Reminders
+              </Button>
             </>
           ) : (
             <>
@@ -128,8 +133,13 @@ export default function Home() {
         </div>
       </div>
       {finishCreatedReminder ? (
-        <div className='w-full flex items-center justify-center'>
-          <Image src='/dog.gif' width={500} height={500} alt='Dog Gif' />
+        <div className='w-full space-y-6 flex flex-col items-center justify-center'>
+          <h1 className='text-2xl font-semibold text-gray-700 mt-4'>
+            Pet the dog to go to calendar
+          </h1>
+          <Link href={calendarUrl} target="_blank" >
+            <Image src='/dog.gif' width={500} height={500} alt='Dog Gif' />
+          </Link>
         </div>
       ) : (
         <></>
