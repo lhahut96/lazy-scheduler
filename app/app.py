@@ -1,6 +1,7 @@
 import datetime
 import os.path
 import json
+import pytz
 from pdf_parser.schedule_reader import get_schedule_table
 
 from flask import Flask
@@ -181,13 +182,7 @@ def upload():
 
     
     print(rawResp)
-    # return "adsfsdf"
-
-    # with open('parser-sample-response.json') as f:
-    #     rawResp = json.load(f)
         
-    strStartTime = ""
-    strEndTime = ""
     events = []
     noOfWeeks = rawResp['no_of_weeks']
     rawEvents = rawResp['events']
@@ -195,17 +190,13 @@ def upload():
     for event in rawEvents:
         rawDate = datetime.strptime(event['date'],"%Y-%m-%dT%H:%M:%S")
         startTime = rawDate.replace(hour=hour, minute=minute)
-        endTime = startTime + timedelta(minutes=170) 
-        # print(endTime)
-        
-        strStartTime = str(startTime.strftime("%Y-%m-%dT%H:%M:%S")) + '-07:00'
-        strEndTime = str(endTime.strftime("%Y-%m-%dT%H:%M:%S")) + '-07:00'
+        endTime = startTime + timedelta(minutes=170)
 
         tmp = {
             "name": event['name'],
             "description": "",
-            "startTime": strStartTime,
-            "endTime": strEndTime,
+            "startTime": startTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "endTime": endTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
             "reminders": []
         }
 
@@ -215,15 +206,15 @@ def upload():
 
     # get date for first week
     rawFirstWeekDate = datetime.strptime(rawResp['start_date'],"%Y-%m-%dT%H:%M:%S")
-    startTime = rawDate.replace(hour=hour, minute=minute)
+    startTime = rawFirstWeekDate.replace(hour=hour, minute=minute)
     endTime = startTime + timedelta(minutes=170) 
 
     resp = {
         "course": courseName,
         "location": roomNumber,
         "description": "",
-        "startTime": strStartTime,
-        "endTime": strEndTime,
+        "startTime": startTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "endTime": endTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
         "noOfWeeks": noOfWeeks,
         "events": events
     }
