@@ -2,9 +2,8 @@ import json
 import os
 from os.path import join, dirname
 
-from dateparser import parse
-
 import boto3
+from dateparser import parse
 
 from pdf_parser.utils.cache_utils import cache
 
@@ -134,9 +133,9 @@ def get_schedule_table(file_stream, file_name, schedule_type):
                         field = "assessment"
                     if field == "activities" or field == "assessment":
                         if "type" not in event:
-                            if (("exam" in cell.lower() or "test" in cell.lower())
+                            if (("exam" in cell.lower() or "midterm" in cell.lower())
                                     and "review" not in cell.lower()
-                                    and "final" not in cell.lower()) :
+                                    and "final" not in cell.lower()):
                                 event["type"] = "exam"
                                 event["name"] = cell.strip()
                             elif "assignment" in cell.lower() and "review" not in cell.lower():
@@ -182,4 +181,4 @@ def main(file_path):
 
 if __name__ == "__main__":
     # file_name = sys.argv[1]
-    main("data/WhatsApp Image 2024-09-22 at 10.30.16 AM.jpeg")
+    main("data/course-outline.png")
