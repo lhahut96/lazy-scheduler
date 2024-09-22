@@ -145,13 +145,10 @@ def createEvents():
     return response
 
 def validateReminder(jsonData):
-    print(jsonData)
     for event in jsonData:
         if len(event['reminders']) > 0:
             for minute in event['reminders']:
-                print(minute)
                 if minute < 0 or minute > 40320:
-                    print("masuk")
                     return False
 
     return True
