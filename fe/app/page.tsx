@@ -9,6 +9,7 @@ export default function Home() {
   const [data, setData] = useState<generateScheduleData>({
     courseName: "",
     roomNumber: "",
+    time : "12:00",
     outlineFile: null,
   });
 
@@ -19,14 +20,14 @@ export default function Home() {
     setData({ ...data, outlineFile: file });
   };
 
-  const fieldUpdate = (values: { courseName: string; roomNumber: string }) => {
+  const fieldUpdate = (values: { courseName: string; roomNumber: string, time: string}) => {
     const newData = {
       courseName: values.courseName,
       roomNumber: values.roomNumber,
+      time: values.time,
       outlineFile: data.outlineFile,
     };
     setData(newData);
-    console.log(newData.outlineFile?.stream());
     handleGenerateSchedule(newData);
   };
 
