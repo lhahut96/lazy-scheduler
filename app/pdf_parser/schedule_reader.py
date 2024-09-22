@@ -1,5 +1,7 @@
 import json
 import os
+from os.path import join, dirname
+
 from dateparser import parse
 
 import boto3
@@ -67,7 +69,7 @@ def _get_textract_client():
 
 
 def get_schedule_table(file_stream, file_name, schedule_type):
-    json_file = "data/" + file_name[:-4] + ".json"
+    json_file = join(dirname(__file__), "data/" + file_name[:-4] + ".json")
     if os.path.exists(json_file):
         blocks = json.load(open(json_file))
     else:
@@ -154,13 +156,13 @@ def get_schedule_table(file_stream, file_name, schedule_type):
     return result
 
 
-def main(file_name):
-    with open("data/" + file_name, 'rb') as file:
+def main(file_path):
+    with open(file_path, 'rb') as file:
         img_test = file.read()
         bytes_test = bytearray(img_test)
-        print('Image loaded', file_name)
+        print('Image loaded', file_path)
 
-    table = get_schedule_table(file_name=file_name,
+    table = get_schedule_table(file_name=file_path.split("/")[-1],
                                file_stream=bytes_test,
                                schedule_type="course-outline")
     with open('data/schedule.json', 'w') as outfile:
@@ -169,4 +171,4 @@ def main(file_name):
 
 if __name__ == "__main__":
     # file_name = sys.argv[1]
-    main("course-outline-01.png")
+    main("data/course-outline-01.png")
