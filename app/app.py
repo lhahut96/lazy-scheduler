@@ -1,6 +1,7 @@
 import datetime
 import os.path
 import json
+import pytz
 from pdf_parser.schedule_reader import get_schedule_table
 
 from flask import Flask
@@ -51,184 +52,113 @@ def checkGooglePermission():
 
     return creds
 
-# @app.route('/create-schedule', methods=['POST'])
-@app.route('/create-schedule', methods=['GET'])
+@app.route('/create-schedule', methods=['GET', 'POST'])
 def createEvents():
-
-    # eventName = request.form.get('language')
-    data = '''
-{
-  "course": "course 1",
-  "location": "NW1234",
-  "description": "this is description/remarks/notes",
-  "startTime": "2024-09-21T14:00:00-07:00",
-  "endTime": "2024-09-21T17:00:00-07:00",
-  "noOfWeeks": 14,
-  "events": [
-    {
-      "name": "quiz 1",
-      "description": "this is description/remarks/notes",
-      "startTime": "2024-09-21T14:00:00-07:00",
-      "endTime": "2024-09-21T17:00:00-07:00",
-      "reminders": [
-        1440,
-        10080
-      ]
-    },
-    {
-      "name": "assignment 1",
-      "description": "this is description/remarks/notes",
-      "startTime": "2024-09-22T14:00:00-07:00",
-      "endTime": "2024-09-22T17:00:00-07:00",
-      "reminders": [
-        1440,
-        10080
-      ]
+    response = {
+        "success": False,
+        "message": ""
     }
-  ]
-}
-'''
-    # print(data)
-
+    
     try:
-        creds = checkGooglePermission()
-        service = build("calendar", "v3", credentials=creds)
+        course = request.get_json()
+        validated = validateReminder(course['events'])
 
-        course = json.loads(data)
-        # print(jsonData)
+        if validated:
+            creds = checkGooglePermission()
+            service = build("calendar", "v3", credentials=creds)
 
-        # create weekly class event
-        weeklyClass = {
-            'summary': course['course'],
-            'location': course['location'],
-            'description': course['description'],
-            'start': {
-                'dateTime': course['startTime'],
-                'timeZone': 'Canada/Pacific',
-            },
-            'end': {
-                'dateTime': course['endTime'],
-                'timeZone': 'Canada/Pacific',
-            },
-            'recurrence': [
-                'RRULE:FREQ=WEEKLY;COUNT={}'.format(course['noOfWeeks'])
-            ]
-        }
+            # course = json.loads(data)
+            # print(jsonData)
 
-        weeklyClass = service.events().insert(calendarId='primary', body=weeklyClass).execute()
-
-        # create other events e.g. quiz, assignment etc
-        for event in course['events']:
-            eventData = {
-                'summary': event['name'],
+            # create weekly class event
+            weeklyClass = {
+                'summary': course['course'],
                 'location': course['location'],
-                'description': event['description'],
+                'description': course['description'],
                 'start': {
-                    'dateTime': event['startTime'],
+                    'dateTime': course['startTime'],
                     'timeZone': 'Canada/Pacific',
                 },
                 'end': {
-                    'dateTime': event['endTime'],
+                    'dateTime': course['endTime'],
                     'timeZone': 'Canada/Pacific',
-                }
+                },
+                'recurrence': [
+                    'RRULE:FREQ=WEEKLY;COUNT={}'.format(course['noOfWeeks'])
+                ]
             }
 
-            # check if need reminders
-            if len(event['reminders']):
-                reminders = []
+            weeklyClass = service.events().insert(calendarId='primary', body=weeklyClass).execute()
+            result = 'Event created: %s' % (weeklyClass.get('htmlLink'))
+            print(result + "\n")
 
-                for reminder in event['reminders']:
-                    tmp = {'method': 'popup', 'minutes': reminder}
-                    reminders.append(tmp)
-
-                eventData['reminders'] = {
-                    'useDefault': False,
-                    'overrides': reminders
+            # create other events e.g. quiz, assignment etc
+            for event in course['events']:
+                eventData = {
+                    'summary': event['name'],
+                    'location': course['location'],
+                    'description': event['description'],
+                    'start': {
+                        'dateTime': event['startTime'],
+                        'timeZone': 'Canada/Pacific',
+                    },
+                    'end': {
+                        'dateTime': event['endTime'],
+                        'timeZone': 'Canada/Pacific',
+                    }
                 }
 
-            print(eventData)
-            eventData = service.events().insert(calendarId='primary', body=eventData).execute()
-            result = 'Event created: %s' % (eventData.get('htmlLink'))
-            print(result)
+                # check if need reminders
+                if len(event['reminders']):
+                    reminders = []
+
+                    for reminder in event['reminders']:
+                        tmp = {'method': 'popup', 'minutes': reminder}
+                        reminders.append(tmp)
+
+                    eventData['reminders'] = {
+                        'useDefault': False,
+                        'overrides': reminders
+                    }
+
+                # print(eventData)
+                eventData = service.events().insert(calendarId='primary', body=eventData).execute()
+                result = 'Event created: %s' % (eventData.get('htmlLink'))
+                print(result + "\n")
+
+            response = {
+                "success": True,
+                "message": "Event created successfully",
+                "link": weeklyClass.get('htmlLink')
+            }
+        else:
+            response = {
+                "success": False,
+                "message": "The available reminder of an event is 0 mintues to 4 weeks"
+            }
 
     except HttpError as error:
         print(f"HTTP error occurred: {error}")
     except Exception as e:
         print(f"Other error occurred: {e}")
 
-    ######
+    return response
 
-    # try:
-    #     service = build("calendar", "v3", credentials=creds)
+def validateReminder(jsonData):
+    for event in jsonData:
+        if len(event['reminders']) > 0:
+            for minute in event['reminders']:
+                if minute < 0 or minute > 40320:
+                    return False
 
-    #     # insert to calendar
-    #     print("Inserting event to calendar")
-
-    #     event = {
-    #         'summary': 'Lazy Scheduler',
-    #         'location': 'NW 5107',
-    #         'description': 'Test event',
-    #         'start': {
-    #             'dateTime': '2024-09-21T14:00:00-07:00',
-    #             'timeZone': 'Canada/Pacific',
-    #         },
-    #         'end': {
-    #             'dateTime': '2024-09-21T17:00:00-07:00',
-    #             'timeZone': 'Canada/Pacific',
-    #         },
-    #         'recurrence': [
-    #             'RRULE:FREQ=WEEKLY;COUNT=2'
-    #             # "RRULE:FREQ=WEEKLY;UNTIL=20110701T170000Z",
-    #         ],
-    #         'reminders': {
-    #             'useDefault': False,
-    #             'overrides': [
-    #                 {'method': 'popup', 'minutes': 24 * 60},
-    #                 {'method': 'popup', 'minutes': 10},
-    #             ],
-    #         },
-    #     }
-
-    #     event = service.events().insert(calendarId='primary', body=event).execute()
-    #     result = 'Event created: %s' % (event.get('htmlLink'))
-    #     print(result)
-
-        # # Call the Calendar API
-        # now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
-        # print("Getting the upcoming 10 events")
-        # events_result = (
-        #     service.events()
-        #     .list(
-        #         calendarId="primary",
-        #         timeMin=now,
-        #         maxResults=10,
-        #         singleEvents=True,
-        #         orderBy="startTime",
-        #     )
-        #     .execute()
-        # )
-        # events = events_result.get("items", [])
-
-        # if not events:
-        #     print("No upcoming events found.")
-        #     return
-
-        # Prints the start and name of the next 10 events
-        # for event in events:
-        #     start = event["start"].get("dateTime", event["start"].get("date"))
-        #     print(start, event["summary"])
-
-    # except HttpError as error:
-    #     print(f"An error occurred: {error}")
-
-    return 'abcd'
+    return True
 
 @app.route('/upload', methods=['POST'])
 def upload():
     courseName = request.form['courseName']
     roomNumber = request.form['roomNumber']
     time = request.form['time']
-    file = request.files['outlineFile'].read()
+    file = request.files['outlineFile']
 
     # courseName = "course name"
     # roomNumber = "123"
@@ -243,36 +173,27 @@ def upload():
     # print(roomNumber)
 
     # call image parser
-    # rawResp = get_schedule_table(file_name="course-outline.png",
-    #                            file_stream=file,
-    #                            schedule_type="course-outline")
+    rawResp = get_schedule_table(file_name=file.filename,
+                               file_stream=file.read(),
+                               schedule_type="course-outline")
 
     
-    # print(rawResp)
-    # return "adsfsdf"
-
-    with open('parser-sample-response.json') as f:
-        rawResp = json.load(f)
+    print(rawResp)
         
-    strStartTime = ""
-    strEndTime = ""
     events = []
     noOfWeeks = rawResp['no_of_weeks']
     rawEvents = rawResp['events']
+
     for event in rawEvents:
         rawDate = datetime.strptime(event['date'],"%Y-%m-%dT%H:%M:%S")
         startTime = rawDate.replace(hour=hour, minute=minute)
-        endTime = startTime + timedelta(minutes=170) 
-        # print(endTime)
-        
-        strStartTime = str(startTime.strftime("%Y-%m-%dT%H:%M:%S")) + '-07:00'
-        strEndTime = str(endTime.strftime("%Y-%m-%dT%H:%M:%S")) + '-07:00'
+        endTime = startTime + timedelta(minutes=170)
 
         tmp = {
             "name": event['name'],
             "description": "",
-            "startTime": strStartTime,
-            "endTime": strEndTime,
+            "startTime": startTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "endTime": endTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
             "reminders": []
         }
 
@@ -280,12 +201,17 @@ def upload():
 
     # print(events)
 
+    # get date for first week
+    rawFirstWeekDate = datetime.strptime(rawResp['start_date'],"%Y-%m-%dT%H:%M:%S")
+    startTime = rawFirstWeekDate.replace(hour=hour, minute=minute)
+    endTime = startTime + timedelta(minutes=170) 
+
     resp = {
         "course": courseName,
         "location": roomNumber,
         "description": "",
-        "startTime": strStartTime,
-        "endTime": strEndTime,
+        "startTime": startTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "endTime": endTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
         "noOfWeeks": noOfWeeks,
         "events": events
     }
