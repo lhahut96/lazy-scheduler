@@ -134,7 +134,9 @@ def get_schedule_table(file_stream, file_name, schedule_type):
                         field = "assessment"
                     if field == "activities" or field == "assessment":
                         if "type" not in event:
-                            if ("exam" in cell.lower() or "test" in cell.lower()) and "review" not in cell.lower():
+                            if (("exam" in cell.lower() or "test" in cell.lower())
+                                    and "review" not in cell.lower()
+                                    and "final" not in cell.lower()) :
                                 event["type"] = "exam"
                                 event["name"] = cell.strip()
                             elif "assignment" in cell.lower() and "review" not in cell.lower():
