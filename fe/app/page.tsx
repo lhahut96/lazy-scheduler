@@ -3,23 +3,36 @@ import CourseName from "@/components/home/CourseName";
 import DataTable, { DataRow } from "@/components/home/DataTable";
 import DragUpload from "@/components/home/DragUpload";
 import Header from "@/components/home/Header";
-import { generateSchedule, generateScheduleData } from "@/lib/axios/fetchApi";
-import { useState } from "react";
+import LoadingSpinner from "@/components/loading-spinner";
+import { Button } from "@/components/ui/button";
+import {
+  createReminders,
+  generateSchedule,
+  generateScheduleData,
+} from "@/lib/axios/fetchApi";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-type ScheduleData = {
+export type ScheduleData = {
   course: string;
   description: string;
   endtime: string;
   events: DataRow[];
-}
+};
 
 export default function Home() {
+  const [finishCreatedReminder, setFinishCreatedReminder] = useState(false);
+
   const [data, setData] = useState<generateScheduleData>({
     courseName: "",
     roomNumber: "",
-    time : "12:00",
+    time: "12:00",
     outlineFile: null,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [tableData, setTableData] = useState<DataRow[]>([]);
 
   const [scheduleData, setScheduleData] = useState<ScheduleData>({
     course: "",
@@ -35,7 +48,11 @@ export default function Home() {
     setData({ ...data, outlineFile: file });
   };
 
-  const fieldUpdate = (values: { courseName: string; roomNumber: string, time: string}) => {
+  const fieldUpdate = (values: {
+    courseName: string;
+    roomNumber: string;
+    time: string;
+  }) => {
     const newData = {
       courseName: values.courseName,
       roomNumber: values.roomNumber,
@@ -48,12 +65,40 @@ export default function Home() {
 
   const handleGenerateSchedule = async (data: generateScheduleData) => {
     try {
+      setIsLoading(true);
       const response = await generateSchedule(data);
-      console.log(response);
+      setScheduleData(response);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleUpdateEvents = (events: DataRow[]) => {
+    setTableData(events);
+    setScheduleData({ ...scheduleData, events });
+  };
+
+  const handleGenerateReminders = async () => {
+    try {
+      setIsLoading(true);
+      setTableData([]);
+      const response = await createReminders(scheduleData);
+      setFinishCreatedReminder(true);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => {
+        scrollTo(0, document.body.scrollHeight);
+      }, 300)
+    }
+  };
+
+  useEffect(() => {
+    setTableData(scheduleData.events);
+  }, [scheduleData]);
 
   return (
     <>
@@ -65,12 +110,30 @@ export default function Home() {
             <DragUpload handleUpload={handleOutlineUploadFile} />
           </div>
 
-          <CourseName
-            handleFieldUpdate={fieldUpdate}
-          />
-          <DataTable />
+          <CourseName handleFieldUpdate={fieldUpdate} />
+          {tableData.length ? (
+            <>
+              {" "}
+              <DataTable
+                tableData={tableData}
+                handleUpdateTable={handleUpdateEvents}
+              />
+              <Button onClick={handleGenerateReminders}>Create Event Reminders</Button>
+            </>
+          ) : (
+            <>
+              <LoadingSpinner isLoading={isLoading} />
+            </>
+          )}
         </div>
       </div>
+      {finishCreatedReminder ? (
+        <div className='w-full flex items-center justify-center'>
+          <Image src='/dog.gif' width={500} height={500} alt='Dog Gif' />
+        </div>
+      ) : (
+        <></>
+      )}
     </>
   );
 }
