@@ -8,7 +8,7 @@ export type generateScheduleData = {
 
 const generateSchedule = async (data: generateScheduleData) => {
   try {
-    const response = await axiosInstance.post("/", data);
+    const response = await axiosInstance.postForm("/upload", data);
     return response.data;
   } catch (error) {
     console.error("Error:", error);
