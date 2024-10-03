@@ -1,5 +1,4 @@
 import json
-from tkinter import N
 
 import google.generativeai as genai
 import PyPDF2

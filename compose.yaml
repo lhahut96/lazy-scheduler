@@ -1,5 +1,5 @@
 services:
-  flask:
+  flask-new:
     restart: unless-stopped
     build:
       context: ./app
