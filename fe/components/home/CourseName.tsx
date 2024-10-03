@@ -35,8 +35,8 @@ export default function CourseName({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      courseName: "",
-      roomNumber: "",
+      courseName: "test",
+      roomNumber: "test",
     },
   });
 

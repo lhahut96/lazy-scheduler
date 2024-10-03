@@ -1,11 +1,27 @@
-import axios from 'axios';
+import axios from "axios";
+import { redirect } from "next/navigation";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.137.1:5000', // Replace with your API base URL
-    timeout: 60000, // Request timeout in milliseconds
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: "http://localhost:5001", // Replace with your API base URL
+  timeout: 60000, // Request timeout in milliseconds
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log(response);
+    return response;
+  },
+  (error) => {
+    console.log(error);
+    if ([301, 302].includes(error.response.status)) {
+      const redirectUrl = error.response.headers.location;
+      return redirect(redirectUrl);
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

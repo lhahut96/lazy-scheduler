@@ -17,6 +17,15 @@ const generateSchedule = async (data: generateScheduleData) => {
   }
 };
 
+const clearSchedule = async (token: string) => {
+  try {
+    const response = await axiosInstance.post("/clear-schedule", { token });
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
 const createReminders = async (data: ScheduleData) => {
   try {
     const response = await axiosInstance.post("/create-schedule", data);
@@ -24,10 +33,7 @@ const createReminders = async (data: ScheduleData) => {
   } catch (error) {
     console.error("Error:", error);
   }
-}
-
-
-export {
-  createReminders, generateSchedule
 };
+
+export { clearSchedule, createReminders, generateSchedule };
 

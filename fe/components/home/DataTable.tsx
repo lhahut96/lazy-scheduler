@@ -19,7 +19,7 @@ export type DataRow = {
   reminders: number[];
 };
 
-const initialData : DataRow[] = [
+const initialData: DataRow[] = [
   {
     name: "quiz 1",
     description: "this is description/remarks/notes",
@@ -39,18 +39,26 @@ const initialData : DataRow[] = [
 // Helper function to format date
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
   return date.toLocaleDateString("en-US", options);
 };
 
 // Helper function to format time
 const formatTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  let hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, "0"); // Ensures two digits
-  const period = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12; // Converts to 12-hour format
-  return `${hours}:${minutes}${period}`;
+  const date = new Date(`${dateString}`); // Add 'Z' to indicate UTC
+
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    hour12: true, // Use 12-hour format
+    hour: "2-digit", // Display hours with leading zero
+    minute: "2-digit", // Display minutes with leading zero
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use user's timezone
+  });
+
+  return formatter.format(date);
 };
 
 // Helper function to format reminders from minutes to "X hours Y minutes"
@@ -63,14 +71,24 @@ const formatReminder = (minutes: number): string => {
     // 60 minutes = 1 hour
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return `${hours} hr${hours !== 1 ? "s" : ""}${remainingMinutes > 0 ? ` ${remainingMinutes} min${remainingMinutes !== 1 ? "s" : ""}` : ""}`;
+    return `${hours} hr${hours !== 1 ? "s" : ""}${
+      remainingMinutes > 0
+        ? ` ${remainingMinutes} min${remainingMinutes !== 1 ? "s" : ""}`
+        : ""
+    }`;
   } else {
     // Less than 1 hour
     return `${minutes} min${minutes !== 1 ? "s" : ""}`;
   }
 };
 
-export default function DataTable({tableData = initialData, handleUpdateTable}: {tableData?: DataRow[], handleUpdateTable: (updatedData: DataRow[]) => void}) {
+export default function DataTable({
+  tableData = initialData,
+  handleUpdateTable,
+}: {
+  tableData?: DataRow[];
+  handleUpdateTable: (updatedData: DataRow[]) => void;
+}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState(tableData);
   const [selectedRow, setSelectedRow] = useState<DataRow>({
@@ -94,7 +112,7 @@ export default function DataTable({tableData = initialData, handleUpdateTable}: 
     // Update the row in the data array
     const updatedData = data.map((d) => {
       if (d.name === updatedRow.name) {
-        return {...updatedRow, reminders: updatedRow.reminders ?? []};
+        return { ...updatedRow, reminders: updatedRow.reminders ?? [] };
       }
       return d;
     });
@@ -120,14 +138,14 @@ export default function DataTable({tableData = initialData, handleUpdateTable}: 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((d,index) => (
+          {data.map((d, index) => (
             <TableRow key={index}>
               <TableCell className='font-medium'>{d.name}</TableCell>
               <TableCell>{formatDate(d.startTime)}</TableCell>
               <TableCell>{formatTime(d.startTime)}</TableCell>
               <TableCell>{formatReminder(d.reminders[0] ?? 0)}</TableCell>
               <TableCell>{d.description}</TableCell>
-              <TableCell className="flex items-center justify-center">
+              <TableCell className='flex items-center justify-center'>
                 <Settings
                   onClick={() => handleSettingsClick(d)}
                   className='cursor-pointer'
