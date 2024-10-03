@@ -25,5 +25,5 @@ COPY . /app
 EXPOSE 5001
 
 # Run main when the container launches
-ENTRYPOINT ["uwsgi", "--http", "0.0.0.0:5001", "--master", "-p", "2", "-w", "main:app"]
+ENTRYPOINT ["uwsgi", "--http", "0.0.0.0:5001", "--master", "-p", "2", "-w", "app:app"]
 USER nobody
