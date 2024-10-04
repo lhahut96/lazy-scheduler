@@ -139,7 +139,7 @@ def createEvents():
             response = {
                 "success": True,
                 "message": "Event created successfully",
-                "link": f"{weeklyClass.get("htmlLink")}&authuser={weeklyClass["creator"]["email"]}",
+                "link": f"{weeklyClass.get('htmlLink')}&authuser={weeklyClass['creator']['email']}",
             }
         else:
             response = {

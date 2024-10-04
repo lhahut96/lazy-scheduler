@@ -20,15 +20,17 @@ const handler = NextAuth({
   providers: [google],
   callbacks: {
     async jwt({ token, account }) {
-      console.log(token.expires_at)
+      console.log(token.expires_at);
       if (account) {
         // First-time login, save the `access_token`, its expiry and the `refresh_token`
-        return {
-          ...token,
-          access_token: account.access_token,
-          expires_at: account.expires_at,
-          refresh_token: account.refresh_token,
-        };
+        token.access_token = account.access_token
+          ? account.access_token
+          : token.access_token;
+        token.expires_at = account.expires_at
+          ? account.expires_at
+          : token.expires_at;
+        token.refresh_token = account.refresh_token;
+        return token;
       } else if (Date.now() < token.expires_at * 1000) {
         // Subsequent logins, but the `access_token` is still valid
         return token;

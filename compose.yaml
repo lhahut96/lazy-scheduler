@@ -13,19 +13,20 @@ services:
       - mode: ingress
         target: 5001
         published: 5001
-  # lazy-scheduler:
-  #   restart: unless-stopped
-  #   # domainname: mydomain.com # if you want to use your own domain
-  #   build:
-  #     context: ./fe
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - target: 3000
-  #       mode: ingress
-  #       published: 3000
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         cpus: '0.50'
-  #         memory: 512M
+  lazy-scheduler:
+    restart: unless-stopped
+    env_file: "./fe/.env"
+    # domainname: mydomain.com # if you want to use your own domain
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    ports:
+      - target: 3000
+        mode: ingress
+        published: 3000
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.50'
+          memory: 512M
     

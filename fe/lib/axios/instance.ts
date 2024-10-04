@@ -1,8 +1,9 @@
 import axios from "axios";
 import { redirect } from "next/navigation";
 
+
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5001", // Replace with your API base URL
+  baseURL: process.env.NEXT_PUBLIC_API_URL, // Replace with your API base URL
   timeout: 60000, // Request timeout in milliseconds
   headers: {
     "Content-Type": "application/json",
@@ -11,7 +12,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log(response);
     return response;
   },
   (error) => {
