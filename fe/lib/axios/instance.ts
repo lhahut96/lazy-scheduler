@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:5001", // Replace with your API base URL
-  timeout: 6000, // Request timeout in milliseconds
+  timeout: 60000, // Request timeout in milliseconds
   headers: {
     "Content-Type": "application/json",
   },

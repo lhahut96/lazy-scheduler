@@ -21,6 +21,8 @@ app = Flask(__name__)
 CORS(app, origins=["*"])
 app.secret_key = "super secret key"
 app.config["SESSION_TYPE"] = "filesystem"
+config = dotenv_values(".env")
+
 
 
 # If modifying these scopes, delete the file token.json.
@@ -42,6 +44,7 @@ def checkGooglePermission(token: str):
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
+    
     if token:
         creds = Credentials(token)
 
@@ -55,16 +58,12 @@ def checkGooglePermission(token: str):
             )
             creds = flow.run_local_server(port=0)
 
-    # Save the credentials for the next run
-    with open("credentials/token.json", "w") as token:
-        token.write(creds.to_json())
-
     return creds
 
 
 @app.route("/create-schedule", methods=["GET", "POST"])
 def createEvents():
-    response = {"success": False, "message": ""}
+    response = {"success": True, "message": ""}
 
     try:
         course = request.get_json()
@@ -140,7 +139,7 @@ def createEvents():
             response = {
                 "success": True,
                 "message": "Event created successfully",
-                "link": weeklyClass.get("htmlLink"),
+                "link": f"{weeklyClass.get("htmlLink")}&authuser={weeklyClass["creator"]["email"]}",
             }
         else:
             response = {
@@ -285,12 +284,12 @@ def validateReminder(jsonData):
 @app.route("/upload", methods=["POST"])
 def upload():
     file = request.files["outlineFile"]
+    print(file)
     # create AiParser instance
-    config = dotenv_values(".env")
     aiParser = AiParser(file, config["GEMINI_API_KEY"])
 
     resp = aiParser.generate_json()
-
+    print(resp)
     return resp
 
 
