@@ -2,8 +2,8 @@ import axios from "axios";
 import { redirect } from "next/navigation";
 
 const axiosInstance = axios.create({
-  baseURL: "https://lhahut96-flask-new--5001.prod1.defang.dev", // Replace with your API base URL
-  timeout: 60000, // Request timeout in milliseconds
+  baseURL: "http://localhost:5001", // Replace with your API base URL
+  timeout: 6000, // Request timeout in milliseconds
   headers: {
     "Content-Type": "application/json",
   },

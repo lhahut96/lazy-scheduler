@@ -2,9 +2,6 @@ import { ScheduleData } from "@/app/page";
 import axiosInstance from "./instance";
 
 export type generateScheduleData = {
-  courseName: string;
-  roomNumber: string;
-  time: string;
   outlineFile: File | null;
 };
 

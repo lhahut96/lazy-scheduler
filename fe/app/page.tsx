@@ -1,5 +1,4 @@
 "use client";
-import CourseName from "@/components/home/CourseName";
 import DataTable, { DataRow } from "@/components/home/DataTable";
 import DragUpload from "@/components/home/DragUpload";
 import Header from "@/components/home/Header";
@@ -30,9 +29,6 @@ export default function Home() {
   const session = useSession();
 
   const [data, setData] = useState<generateScheduleData>({
-    courseName: "",
-    roomNumber: "",
-    time: "12:00",
     outlineFile: null,
   });
 
@@ -54,22 +50,7 @@ export default function Home() {
     setData({ ...data, outlineFile: file });
   };
 
-  const fieldUpdate = (values: {
-    courseName: string;
-    roomNumber: string;
-    time: string;
-  }) => {
-    const newData = {
-      courseName: values.courseName,
-      roomNumber: values.roomNumber,
-      time: values.time,
-      outlineFile: data.outlineFile,
-    };
-    setData(newData);
-    handleGenerateSchedule(newData);
-  };
-
-  const handleGenerateSchedule = async (data: generateScheduleData) => {
+  const handleGenerateSchedule = async () => {
     try {
       setIsLoading(true);
       const response = await generateSchedule(data);
@@ -145,8 +126,8 @@ export default function Home() {
               {/* <DragUpload handleUpload={handleScheduleUploadFile} /> */}
               <DragUpload handleUpload={handleOutlineUploadFile} />
             </div>
+            <Button onClick={handleGenerateSchedule}>Generate Schedule</Button>
 
-            <CourseName handleFieldUpdate={fieldUpdate} />
             {tableData.length ? (
               <>
                 {" "}

@@ -284,63 +284,17 @@ def validateReminder(jsonData):
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    courseName = request.form["courseName"]
-    roomNumber = request.form["roomNumber"]
-    time = request.form["time"]
     file = request.files["outlineFile"]
-
-    tmp = time.split(":")
-    hour = int(tmp[0])
-    minute = int(tmp[1])
-
     # create AiParser instance
     config = dotenv_values(".env")
     aiParser = AiParser(file, config["GEMINI_API_KEY"])
 
     resp = aiParser.generate_json()
-    # call image parser
-    # rawResp = get_schedule_table(
-    #     file_name=file.filename, file_stream=file.read(), schedule_type="course-outline"
-    # )
-
-    # events = []
-    # noOfWeeks = rawResp["no_of_weeks"]
-    # rawEvents = rawResp["events"]
-
-    # for event in rawEvents:
-    #     rawDate = datetime.strptime(event["date"], "%Y-%m-%dT%H:%M:%S")
-    #     startTime = rawDate.replace(hour=hour, minute=minute)
-    #     endTime = startTime + timedelta(minutes=170)
-
-    #     tmp = {
-    #         "name": event["name"],
-    #         "description": "",
-    #         "startTime": startTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
-    #         "endTime": endTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
-    #         "reminders": [],
-    #     }
-
-    #     events.append(tmp)
-
-    # # get date for first week
-    # rawFirstWeekDate = datetime.strptime(rawResp["start_date"], "%Y-%m-%dT%H:%M:%S")
-    # startTime = rawFirstWeekDate.replace(hour=hour, minute=minute)
-    # endTime = startTime + timedelta(minutes=170)
-
-    # resp = {
-    #     "course": courseName,
-    #     "location": roomNumber,
-    #     "description": "",
-    #     "startTime": startTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
-    #     "endTime": endTime.astimezone().strftime("%Y-%m-%dT%H:%M:%S%z"),
-    #     "noOfWeeks": noOfWeeks,
-    #     "events": events,
-    # }
 
     return resp
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5001, debug=True)
 else:
     application = app
