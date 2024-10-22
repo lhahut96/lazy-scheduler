@@ -1,5 +1,4 @@
-import datetime
-from datetime import datetime, timedelta
+import os
 
 import flask
 import google.oauth2.credentials
@@ -7,7 +6,7 @@ import google_auth_oauthlib
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 from ai_parser import AiParser
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from flask import Flask, abort, request
 from flask_cors import CORS
 from google.auth.transport.requests import Request
@@ -15,13 +14,12 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from pdf_parser.schedule_reader import get_schedule_table
 
 app = Flask(__name__)
 CORS(app, origins=["*"])
 app.secret_key = "super secret key"
 app.config["SESSION_TYPE"] = "filesystem"
-config = dotenv_values(".env")
+load_dotenv()
 
 
 
@@ -286,7 +284,7 @@ def upload():
     file = request.files["outlineFile"]
     print(file)
     # create AiParser instance
-    aiParser = AiParser(file, config["GEMINI_API_KEY"])
+    aiParser = AiParser(file, os.getenv("GEMINI_API_KEY"))
 
     resp = aiParser.generate_json()
     print(resp)
