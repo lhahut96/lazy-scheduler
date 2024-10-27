@@ -32,7 +32,7 @@ CLIENT_ID = "411838841138-ktj1q566ul6jcjpg0v95l5ldavg9mtbi.apps.googleuserconten
 
 
 @app.route("/check-permission")
-def checkGooglePermission(token: str):
+def checkGooglePermission(token: str , isIdToken: bool = False):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -44,7 +44,7 @@ def checkGooglePermission(token: str):
     # time.
     
     if token:
-        creds = Credentials(token)
+        creds = Credentials(token) if isIdToken else Credentials(id_token=token)
 
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -68,7 +68,7 @@ def createEvents():
         validated = validateReminder(course["events"])
 
         if validated:
-            creds = checkGooglePermission(course["token"])
+            creds = checkGooglePermission(course["token"], course["isIdToken"] if hasattr(course, "isIdToken") else False)
             service = build("calendar", "v3", credentials=creds)
 
             # create weekly class event
@@ -287,7 +287,6 @@ def upload():
     aiParser = AiParser(file, os.getenv("GEMINI_API_KEY"))
 
     resp = aiParser.generate_json()
-    print(resp)
     return resp
 
 

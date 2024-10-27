@@ -2,7 +2,6 @@ import json
 
 import google.generativeai as genai
 import PyPDF2
-from dotenv import dotenv_values
 
 
 class AiParser:
