@@ -11,6 +11,7 @@ from flask import Flask, abort, request
 from flask_cors import CORS
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from google.oauth2.id_token import verify_token
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -22,17 +23,15 @@ app.config["SESSION_TYPE"] = "filesystem"
 load_dotenv()
 
 
-
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 API_SERVICE_NAME = "drive"
 API_VERSION = "v2"
 CLIENT_SECRETS_FILE = "credentials/credentials.json"
-CLIENT_ID = "411838841138-ktj1q566ul6jcjpg0v95l5ldavg9mtbi.apps.googleusercontent.com"
 
 
 @app.route("/check-permission")
-def checkGooglePermission(token: str , isIdToken: bool = False):
+def checkGooglePermission(token: str, isIdToken: bool = False):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -42,12 +41,25 @@ def checkGooglePermission(token: str , isIdToken: bool = False):
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    
-    if token:
-        creds = Credentials(token) if isIdToken else Credentials(id_token=token)
 
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
+    if token:
+        creds = Credentials(token)
+    if isIdToken:
+        id_info = verify_token(token, Request(), os.getenv("GOOGLE_CLIENT_ID"))
+        # Create credentials from the ID token
+        creds = Credentials(
+            token=None,
+            id_token=token,
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=os.getenv("GOOGLE_CLIENT_ID"),
+            client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+        )
+
+        # Refresh the credentials to get an access token
+        creds.refresh(Request())
+
+        # If there are no (valid) credentials available, let the user log in.
+        # if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
@@ -65,10 +77,18 @@ def createEvents():
 
     try:
         course = request.get_json()
+        print(course)
+        if (course["token"]):
+            course["course"]["token"] = course["token"]
+            course = course["course"]
+        
         validated = validateReminder(course["events"])
 
         if validated:
-            creds = checkGooglePermission(course["token"], course["isIdToken"] if hasattr(course, "isIdToken") else False)
+            creds = checkGooglePermission(
+                course["token"],
+                course["isIdToken"] if hasattr(course, "isIdToken") else False,
+            )
             service = build("calendar", "v3", credentials=creds)
 
             # create weekly class event
@@ -137,7 +157,7 @@ def createEvents():
             response = {
                 "success": True,
                 "message": "Event created successfully",
-                "link": f"{weeklyClass.get('htmlLink')}&authuser={weeklyClass['creator']['email']}",
+                "link": f"https://calendar.google.com/calendar?&authuser={weeklyClass['creator']['email']}",
             }
         else:
             response = {
@@ -148,7 +168,7 @@ def createEvents():
         print(f"HTTP error occurred: {error}")
         abort(500, error)
     except Exception as e:
-        print(f"Other error occurred: {e}")
+        print(f"Other error occurred: {e.with_traceback()}")
 
     return response
 
@@ -281,8 +301,7 @@ def validateReminder(jsonData):
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    file = request.files["outlineFile"]
-    print(file)
+    file = request.files["outlineFile"]    
     # create AiParser instance
     aiParser = AiParser(file, os.getenv("GEMINI_API_KEY"))
 
@@ -291,6 +310,6 @@ def upload():
 
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)
 else:
     application = app
