@@ -78,6 +78,8 @@ def createEvents():
     try:
         course = request.get_json()
         print(course)
+        if "course" in course:
+            course = course["course"]
         
         validated = validateReminder(course["events"])
 
