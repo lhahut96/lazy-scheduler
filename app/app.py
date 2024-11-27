@@ -77,11 +77,11 @@ def createEvents():
 
     try:
         course = request.get_json()
-        print(course)
+        
         if course["token"]:
-            token = course["token"]
-            course = course["course"]
-            course["token"] = token
+            newCourse = course["course"]
+            newCourse["token"] = course["token"]
+            course = newCourse
 
         validated = validateReminder(course["events"])
 
