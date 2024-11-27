@@ -80,7 +80,7 @@ def createEvents():
         
         if course["token"]:
             newCourse = course["course"]
-            newCourse["token"] = course["token"]
+            newCourse.token = course["token"]
             course = newCourse
 
         validated = validateReminder(course["events"])
