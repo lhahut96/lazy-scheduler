@@ -1,5 +1,3 @@
-from collections import namedtuple
-import json
 import os
 
 import flask
@@ -78,15 +76,9 @@ def createEvents():
     response = {"success": True, "message": ""}
 
     try:
-        course = json.loads(
-            request.data,
-            object_hook=lambda d: namedtuple("X", d.keys())(*d.values()),
-        )
+        course = request.get_json()
+        print(course)
         
-        if course["token"]:
-            course["course"]["token"] = course["token"]
-            course = course["course"]
-
         validated = validateReminder(course["events"])
 
         if validated:
@@ -306,7 +298,7 @@ def validateReminder(jsonData):
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    file = request.files["outlineFile"]
+    file = request.files["outlineFile"]    
     # create AiParser instance
     aiParser = AiParser(file, os.getenv("GEMINI_API_KEY"))
 
