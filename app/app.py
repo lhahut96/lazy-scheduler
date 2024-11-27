@@ -98,7 +98,7 @@ def createEvents():
                     "timeZone": "Canada/Pacific",
                 },
                 "end": {
-                    "dateTime": course["startTime"],
+                    "dateTime": course["endTime"],
                     "timeZone": "Canada/Pacific",
                 },
                 "recurrence": [
