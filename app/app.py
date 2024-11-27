@@ -1,3 +1,5 @@
+from collections import namedtuple
+import json
 import os
 
 import flask
@@ -76,12 +78,14 @@ def createEvents():
     response = {"success": True, "message": ""}
 
     try:
-        course = request.get_json()
-        
+        course = json.loads(
+            request.get_json(),
+            object_hook=lambda d: namedtuple("X", d.keys())(*d.values()),
+        )
+        print(course)
         if course["token"]:
-            newCourse = course["course"]
-            newCourse.token = course["token"]
-            course = newCourse
+            course["course"]["token"] = course["token"]
+            course = course["course"]
 
         validated = validateReminder(course["events"])
 
