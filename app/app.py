@@ -78,9 +78,10 @@ def createEvents():
     try:
         course = request.get_json()
         print(course)
-        if "course" in course:
+        # Check if there is only one key in the course object
+        if len(course.keys()) == 1:
             course = course["course"]
-        
+
         validated = validateReminder(course["events"])
 
         if validated:
@@ -300,7 +301,7 @@ def validateReminder(jsonData):
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    file = request.files["outlineFile"]    
+    file = request.files["outlineFile"]
     # create AiParser instance
     aiParser = AiParser(file, os.getenv("GEMINI_API_KEY"))
 
