@@ -79,10 +79,10 @@ def createEvents():
 
     try:
         course = json.loads(
-            request.get_json(),
+            request.data,
             object_hook=lambda d: namedtuple("X", d.keys())(*d.values()),
         )
-        print(course)
+        
         if course["token"]:
             course["course"]["token"] = course["token"]
             course = course["course"]
